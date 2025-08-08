@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  @apply bg-gray-500/80 text-gray-100;
+  background-image: url('/forest-texture.jpg'); /* Add a subtle forest texture */
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+h1, h2, h3 {
+  font-family: 'Montserrat', sans-serif;
+  @apply font-bold;
+}
+
+p, label, input, button {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.animated-button {
+  @apply relative px-6 py-3 rounded-lg font-semibold text-lg bg-orange-600 text-white transition-all duration-300 ease-in-out;
+}
+
+.animated-button:hover {
+  @apply scale-105 shadow-lg opacity-90;
+  background: linear-gradient(45deg, #D95F0E, #E8B923);
+}
+
+.deal-card, .business-card {
+  @apply bg-gray-800/90 rounded-lg shadow-md p-6 transition-all duration-300 ease-in-out;
+}
+
+.deal-card:hover, .business-card:hover {
+  @apply shadow-xl bg-gray-800/95 translate-y-[-4px];
+}
+
+.nav-link {
+  @apply text-gray-300 hover:text-orange-500 transition-colors duration-200;
+}
+
+.hero-section {
+  @apply bg-cover bg-center py-16 px-4 sm:px-6 lg:px-8;
+  background-image: url('/pnw-mountains.jpg'); /* Add a Pacific Northwest mountain background */
+}
+
+/* Additional dark grey backgrounds with opacity */
+.header-bg {
+  @apply bg-gray-900/85;
+}
+
+.sidebar-bg {
+  @apply bg-gray-800/85;
+}
+
+.modal-bg {
+  @apply bg-gray-900/90;
+}
+
+.card-bg {
+  @apply bg-gray-700/80;
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}

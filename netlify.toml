@@ -1,0 +1,3 @@
+[[functions]]
+  function = "send-deal-notifications"
+  schedule = "@daily"

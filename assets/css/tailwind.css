@@ -1,0 +1,35 @@
+/* assets/css/tailwind.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.hero-section {
+  @apply bg-pnw-evergreen bg-cover bg-center py-16 px-4;
+  background-image: url('/forest-texture.jpg');
+}
+
+.deal-card {
+  @apply bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300;
+}
+
+.animated-button {
+  @apply bg-pnw-orange text-white font-semibold py-3 px-6 rounded-lg hover:bg-pnw-yellow transition-colors duration-300;
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .hero-section h1 {
+    @apply text-3xl;
+  }
+  .grid {
+    @apply grid-cols-1;
+  }
+}
