@@ -1,28 +1,82 @@
 <template>
-  <div class="py-12 px-4 sm:px-6 lg:px-8">
-    <h1 class="text-4xl sm:text-5xl font-bold text-orange-500 mb-8 text-center fade-in">PNW Business Directory</h1>
-    <div class="max-w-4xl mx-auto mb-10">
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Search for businesses..."
-        class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-      />
-    </div>
-    <div class="max-w-4xl mx-auto mb-10">
-      <CategoryFilter v-model="selectedCategories" :includeSubcategories="true" />
-    </div>
-    <div v-if="error" class="text-center text-red-500 mb-4">{{ error }}</div>
-    <div v-if="loading" class="text-center text-gray-300">Loading businesses...</div>
-    <div v-else-if="filteredBusinesses.length" class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <NuxtLink v-for="business in filteredBusinesses" :key="business.id" :to="`/business/${business.slug || 'missing-slug-' + business.id}`" class="block">
-        <BusinessCard :business="business" />
-      </NuxtLink>
-    </div>
-    <div v-else class="text-center text-gray-300">No businesses found.</div>
-    <div class="text-center mt-8">
-      <NuxtLink to="/business-signup" class="animated-button inline-block">Are you a business? Join us!</NuxtLink>
-    </div>
+  <div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container mx-auto px-4 text-center relative z-10">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in leading-tight">
+          PNW Business Directory
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-200 leading-relaxed">
+          Discover amazing local businesses across the Pacific Northwest
+        </p>
+      </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 section-bg">
+      <div class="max-w-4xl mx-auto">
+        <div class="mb-8">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search for businesses..."
+            class="form-input text-lg"
+          />
+        </div>
+        <div class="mb-8">
+          <CategoryFilter v-model="selectedCategories" :includeSubcategories="true" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 section-bg-alt">
+      <div class="max-w-7xl mx-auto">
+        <div v-if="error" class="text-center text-red-500 mb-8 text-lg">{{ error }}</div>
+        <div v-if="loading" class="text-center text-gray-300 mb-8">
+          <div class="loading-spinner mx-auto mb-4"></div>
+          <p class="text-lg">Loading businesses...</p>
+        </div>
+        <div v-else-if="filteredBusinesses.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <NuxtLink 
+            v-for="business in filteredBusinesses" 
+            :key="business.id" 
+            :to="`/business/${business.slug || 'missing-slug-' + business.id}`" 
+            class="block"
+          >
+            <BusinessCard :business="business" />
+          </NuxtLink>
+        </div>
+        <div v-else class="text-center py-16">
+          <div class="text-6xl mb-4">🏪</div>
+          <h3 class="text-2xl font-bold text-gray-300 mb-4">No businesses found</h3>
+          <p class="text-gray-400 mb-8">Try adjusting your search or browse all categories</p>
+          <NuxtLink to="/business-signup" class="animated-button inline-block">
+            List Your Business
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 section-bg text-center">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold text-pnw-orange mb-6 fade-in">
+          Own a Business?
+        </h2>
+        <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+          Join our directory and get your deals in front of thousands of PNW locals!
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <NuxtLink to="/business-signup" class="animated-button">
+            List Your Business
+          </NuxtLink>
+          <NuxtLink to="/" class="cta-button-secondary">
+            Learn More
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -60,9 +114,6 @@ onMounted(async () => {
     } else {
       businesses.value = data || [];
       console.log('Fetched businesses:', data);
-      if (!data.some(b => b.name === 'Lanes Brains')) {
-        console.warn('Lanes Brains not found in fetched data');
-      }
     }
   } catch (err) {
     console.error('Unexpected error fetching businesses:', err);
@@ -83,7 +134,19 @@ const filteredBusinesses = computed(() => {
       : true;
     return matchesSearch && matchesCategory;
   });
-  console.log('Filtered businesses:', filtered);
   return filtered;
 });
 </script>
+
+<style scoped>
+.cta-button-secondary {
+  @apply backdrop-blur-md text-white px-8 py-4 rounded-xl font-semibold text-lg border transition-all duration-300;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cta-button-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+</style>

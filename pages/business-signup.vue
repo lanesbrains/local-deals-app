@@ -1,114 +1,201 @@
 <template>
-  <div class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-900">
+  <div>
     <ConfettiExplosion v-if="showConfetti" class="fixed inset-0" :force="0.4" :stageWidth="2000" :stageHeight="2000" />
-    <h1 class="text-4xl sm:text-5xl font-bold text-orange-500 mb-8 text-center fade-in">Join Our PNW Directory!</h1>
-    <p class="text-lg text-gray-300 mb-10 text-center">List your business for $5/month (or $10/month for premium)!</p>
-    <form @submit.prevent="handleBusinessSignup" class="max-w-md mx-auto bg-gray-800 p-8 rounded-xl shadow-lg">
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Business Email (for login)</label>
-        <input
-          v-model="email"
-          type="email"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-          required
-        />
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container mx-auto px-4 text-center relative z-10">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in leading-tight">
+          Join Our PNW Directory!
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-200 leading-relaxed">
+          List your business for $5/month (or $10/month for premium) and reach thousands of PNW locals!
+        </p>
       </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Password</label>
-        <input
-          v-model="password"
-          type="password"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-          required
-        />
+    </section>
+
+    <!-- Form Section -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 section-bg">
+      <div class="max-w-2xl mx-auto">
+        <form @submit.prevent="handleBusinessSignup" class="card-bg p-8 rounded-2xl shadow-2xl">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Account Details -->
+            <div class="md:col-span-2">
+              <h2 class="text-2xl font-bold text-pnw-orange mb-6">Account Details</h2>
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">Business Email (for login)</label>
+              <input
+                v-model="email"
+                type="email"
+                class="form-input"
+                required
+              />
+            </div>
+            <div>
+              <label class="form-label">Password</label>
+              <input
+                v-model="password"
+                type="password"
+                class="form-input"
+                required
+              />
+            </div>
+            <div>
+              <label class="form-label">Business Name</label>
+              <input
+                v-model="businessName"
+                type="text"
+                class="form-input"
+                required
+              />
+            </div>
+
+            <!-- Business Details -->
+            <div class="md:col-span-2">
+              <h2 class="text-2xl font-bold text-pnw-orange mb-6 mt-8">Business Details</h2>
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">Description</label>
+              <textarea
+                v-model="description"
+                class="form-input"
+                rows="4"
+                placeholder="Tell us about your business..."
+              ></textarea>
+            </div>
+            <div>
+              <label class="form-label">Website</label>
+              <input
+                v-model="website"
+                type="url"
+                class="form-input"
+                placeholder="https://yourwebsite.com"
+              />
+            </div>
+            <div>
+              <label class="form-label">Phone</label>
+              <input
+                v-model="phone"
+                type="tel"
+                class="form-input"
+                placeholder="(555) 123-4567"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">Address</label>
+              <input
+                v-model="address"
+                type="text"
+                class="form-input"
+                placeholder="123 Main St, Seattle, WA 98101"
+              />
+            </div>
+
+            <!-- Social Media -->
+            <div class="md:col-span-2">
+              <h2 class="text-2xl font-bold text-pnw-orange mb-6 mt-8">Social Media</h2>
+            </div>
+            <div>
+              <label class="form-label">Twitter URL</label>
+              <input
+                v-model="socialMedia.twitter"
+                type="url"
+                class="form-input"
+                placeholder="https://twitter.com/yourbusiness"
+              />
+            </div>
+            <div>
+              <label class="form-label">Instagram URL</label>
+              <input
+                v-model="socialMedia.instagram"
+                type="url"
+                class="form-input"
+                placeholder="https://instagram.com/yourbusiness"
+              />
+            </div>
+
+            <!-- Categories -->
+            <div class="md:col-span-2">
+              <h2 class="text-2xl font-bold text-pnw-orange mb-6 mt-8">Categories</h2>
+            </div>
+            <div>
+              <label class="form-label">Category</label>
+              <select
+                v-model="categoryId"
+                class="form-input"
+                required
+              >
+                <option value="" disabled>Select a category</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Subcategory</label>
+              <select
+                v-model="subcategoryId"
+                class="form-input"
+              >
+                <option value="" disabled>Select a subcategory</option>
+                <option v-for="subcategory in filteredSubcategories" :key="subcategory.id" :value="subcategory.id">
+                  {{ subcategory.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Premium Option -->
+            <div class="md:col-span-2">
+              <div class="card-bg p-6 rounded-xl border border-pnw-orange/20">
+                <div class="flex items-center mb-4">
+                  <input 
+                    type="checkbox" 
+                    v-model="isPremium" 
+                    class="mr-3 w-5 h-5 text-pnw-orange bg-gray-700 border-gray-600 rounded focus:ring-pnw-orange"
+                  />
+                  <label class="text-xl font-bold text-pnw-orange">Premium Listing ($10/month)</label>
+                </div>
+                <p class="text-gray-300 text-sm">
+                  Premium listings get featured placement, priority in search results, and enhanced visibility across the platform.
+                </p>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="md:col-span-2 text-center mt-8">
+              <AnimatedButton type="submit" :loading="loading" class="w-full md:w-auto">
+                Join Now - {{ isPremium ? '$10/month' : '$5/month' }}
+              </AnimatedButton>
+            </div>
+          </div>
+        </form>
       </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Business Name</label>
-        <input
-          v-model="businessName"
-          type="text"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-          required
-        />
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 section-bg-alt text-center">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl font-bold text-pnw-orange mb-12">Why Join Our Directory?</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="benefit-card">
+            <div class="text-4xl mb-4">🎯</div>
+            <h3 class="text-xl font-bold mb-3">Targeted Audience</h3>
+            <p class="text-gray-300">Reach PNW locals who are actively looking for deals and local businesses.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="text-4xl mb-4">💰</div>
+            <h3 class="text-xl font-bold mb-3">Affordable Pricing</h3>
+            <p class="text-gray-300">Just $5/month for standard listings, $10/month for premium placement.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="text-4xl mb-4">📈</div>
+            <h3 class="text-xl font-bold mb-3">Grow Your Business</h3>
+            <p class="text-gray-300">Increase foot traffic, online visibility, and customer engagement.</p>
+          </div>
+        </div>
       </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Description</label>
-        <textarea
-          v-model="description"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-          rows="4"
-        ></textarea>
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Website</label>
-        <input
-          v-model="website"
-          type="url"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Phone</label>
-        <input
-          v-model="phone"
-          type="tel"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Address</label>
-        <input
-          v-model="address"
-          type="text"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Social Media (e.g., Twitter, Instagram)</label>
-        <input
-          v-model="socialMedia.twitter"
-          type="url"
-          placeholder="Twitter URL"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 mb-2"
-        />
-        <input
-          v-model="socialMedia.instagram"
-          type="url"
-          placeholder="Instagram URL"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-        />
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Category</label>
-        <select
-          v-model="categoryId"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-          required
-        >
-          <option v-for="category in categories" :key="category.id" :value="category.id">
-            {{ category.name }}
-          </option>
-        </select>
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Subcategory</label>
-        <select
-          v-model="subcategoryId"
-          class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-        >
-          <option value="" disabled>Select a subcategory</option>
-          <option v-for="subcategory in filteredSubcategories" :key="subcategory.id" :value="subcategory.id">
-            {{ subcategory.name }}
-          </option>
-        </select>
-      </div>
-      <div class="mb-6">
-        <label class="block text-gray-300 font-semibold mb-2">Premium Listing ($10/month)</label>
-        <input type="checkbox" v-model="isPremium" class="mr-2" />
-        <span class="text-gray-300">Yes, make my listing stand out!</span>
-      </div>
-      <AnimatedButton type="submit" :loading="loading">Join Now</AnimatedButton>
-    </form>
+    </section>
   </div>
 </template>
 
@@ -211,3 +298,17 @@ const handleBusinessSignup = async () => {
   }
 };
 </script>
+
+<style scoped>
+.benefit-card {
+  @apply p-6 rounded-xl backdrop-blur-md transition-all duration-300;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.benefit-card:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+</style>

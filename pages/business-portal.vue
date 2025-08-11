@@ -1,135 +1,242 @@
 <template>
-    <div class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-900">
-      <h1 class="text-4xl sm:text-5xl font-bold text-orange-500 mb-8 text-center fade-in">Business Portal</h1>
-      <div v-if="!user" class="max-w-md mx-auto bg-gray-800 p-8 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-bold text-orange-500 mb-4">Log In</h2>
-        <form @submit.prevent="handleLogin">
-          <div class="mb-6">
-            <label class="block text-gray-300 font-semibold mb-2">Email</label>
-            <input
-              v-model="email"
-              type="email"
-              class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              required
-            />
-          </div>
-          <div class="mb-6">
-            <label class="block text-gray-300 font-semibold mb-2">Password</label>
-            <input
-              v-model="password"
-              type="password"
-              class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              required
-            />
-          </div>
-          <AnimatedButton type="submit" :loading="loading">Log In</AnimatedButton>
-        </form>
+  <div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container mx-auto px-4 text-center relative z-10">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in leading-tight">
+          Business Portal
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-gray-200 leading-relaxed">
+          Manage your business profile and deals
+        </p>
       </div>
-      <div v-else class="max-w-4xl mx-auto bg-gray-800 p-8 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-bold text-orange-500 mb-4">Your Business: {{ business?.name }}</h2>
-        <form @submit.prevent="updateBusiness" class="mb-8">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    </section>
+
+    <!-- Login Section -->
+    <section v-if="!user" class="py-16 px-4 sm:px-6 lg:px-8 section-bg">
+      <div class="max-w-md mx-auto">
+        <div class="card-bg p-8 rounded-2xl shadow-2xl">
+          <h2 class="text-3xl font-bold text-pnw-orange mb-6 text-center">Log In</h2>
+          <form @submit.prevent="handleLogin">
             <div class="mb-6">
-              <label class="block text-gray-300 font-semibold mb-2">Business Name</label>
+              <label class="form-label">Email</label>
               <input
-                v-model="businessName"
-                type="text"
-                class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                v-model="email"
+                type="email"
+                class="form-input"
                 required
               />
             </div>
             <div class="mb-6">
-              <label class="block text-gray-300 font-semibold mb-2">Website</label>
+              <label class="form-label">Password</label>
               <input
-                v-model="website"
-                type="url"
-                class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                v-model="password"
+                type="password"
+                class="form-input"
+                required
               />
             </div>
-            <div class="mb-6">
-              <label class="block text-gray-300 font-semibold mb-2">Phone</label>
-              <input
-                v-model="phone"
-                type="tel"
-                class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            </div>
-            <div class="mb-6">
-              <label class="block text-gray-300 font-semibold mb-2">Address</label>
-              <input
-                v-model="address"
-                type="text"
-                class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            </div>
-            <div class="mb-6">
-              <label class="block text-gray-300 font-semibold mb-2">Social Media (Twitter)</label>
-              <input
-                v-model="socialMedia.twitter"
-                type="url"
-                class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            </div>
-            <div class="mb-6">
-              <label class="block text-gray-300 font-semibold mb-2">Social Media (Instagram)</label>
-              <input
-                v-model="socialMedia.instagram"
-                type="url"
-                class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            </div>
-          </div>
-          <div class="mb-6">
-            <label class="block text-gray-300 font-semibold mb-2">Description</label>
-            <textarea
-              v-model="description"
-              class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              rows="4"
-            ></textarea>
-          </div>
-          <AnimatedButton type="submit" :loading="loading">Update Profile</AnimatedButton>
-        </form>
-        <h2 class="text-2xl font-bold text-orange-500 mb-4">Manage Deals</h2>
-        <div class="space-y-4 mb-8">
-          <DealCard v-for="deal in deals" :key="deal.id" :deal="deal" @delete="deleteDeal(deal.id)" />
-        </div>
-        <h3 class="text-xl font-semibold text-orange-500 mb-4">Add New Deal</h3>
-        <form @submit.prevent="addDeal">
-          <div class="mb-6">
-            <label class="block text-gray-300 font-semibold mb-2">Deal Title</label>
-            <input
-              v-model="newDeal.title"
-              type="text"
-              class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              required
-            />
-          </div>
-          <div class="mb-6">
-            <label class="block text-gray-300 font-semibold mb-2">Description</label>
-            <textarea
-              v-model="newDeal.description"
-              class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              rows="4"
-            ></textarea>
-          </div>
-          <div class="mb-6">
-            <label class="block text-gray-300 font-semibold mb-2">Expires At</label>
-            <input
-              v-model="newDeal.expires_at"
-              type="date"
-              class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-          <AnimatedButton type="submit" :loading="loading">Add Deal</AnimatedButton>
-        </form>
-        <div class="mt-8">
-          <AnimatedButton @click="logout">Log Out</AnimatedButton>
+            <AnimatedButton type="submit" :loading="loading" class="w-full">
+              Log In
+            </AnimatedButton>
+          </form>
         </div>
       </div>
+    </section>
+
+    <!-- Business Dashboard -->
+    <div v-else>
+      <!-- Business Info Section -->
+      <section class="py-16 px-4 sm:px-6 lg:px-8 section-bg">
+        <div class="max-w-4xl mx-auto">
+          <div class="card-bg p-8 rounded-2xl shadow-2xl">
+            <h2 class="text-3xl font-bold text-pnw-orange mb-6">
+              Your Business: {{ business?.name }}
+            </h2>
+            <form @submit.prevent="updateBusiness" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="form-label">Business Name</label>
+                  <input
+                    v-model="businessName"
+                    type="text"
+                    class="form-input"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="form-label">Website</label>
+                  <input
+                    v-model="website"
+                    type="url"
+                    class="form-input"
+                    placeholder="https://yourwebsite.com"
+                  />
+                </div>
+                <div>
+                  <label class="form-label">Phone</label>
+                  <input
+                    v-model="phone"
+                    type="tel"
+                    class="form-input"
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
+                <div>
+                  <label class="form-label">Address</label>
+                  <input
+                    v-model="address"
+                    type="text"
+                    class="form-input"
+                    placeholder="123 Main St, Seattle, WA 98101"
+                  />
+                </div>
+                <div>
+                  <label class="form-label">Twitter URL</label>
+                  <input
+                    v-model="socialMedia.twitter"
+                    type="url"
+                    class="form-input"
+                    placeholder="https://twitter.com/yourbusiness"
+                  />
+                </div>
+                <div>
+                  <label class="form-label">Instagram URL</label>
+                  <input
+                    v-model="socialMedia.instagram"
+                    type="url"
+                    class="form-input"
+                    placeholder="https://instagram.com/yourbusiness"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="form-label">Description</label>
+                <textarea
+                  v-model="description"
+                  class="form-input"
+                  rows="4"
+                  placeholder="Tell customers about your business..."
+                ></textarea>
+              </div>
+              <div class="text-center">
+                <AnimatedButton type="submit" :loading="loading">
+                  Update Profile
+                </AnimatedButton>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Deals Management Section -->
+      <section class="py-16 px-4 sm:px-6 lg:px-8 section-bg-alt">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold text-pnw-orange mb-8 text-center">Manage Deals</h2>
+          
+          <!-- Existing Deals -->
+          <div v-if="deals.length" class="space-y-6 mb-12">
+            <DealCard v-for="deal in deals" :key="deal.id" :deal="deal" @delete="deleteDeal(deal.id)" />
+          </div>
+          
+          <!-- No Deals Message -->
+          <div v-else class="text-center py-12">
+            <div class="text-6xl mb-4">🎯</div>
+            <h3 class="text-2xl font-bold text-gray-300 mb-4">No deals yet</h3>
+            <p class="text-gray-400 mb-8">Create your first deal to start attracting customers!</p>
+          </div>
+
+          <!-- Add New Deal Form -->
+          <div class="card-bg p-8 rounded-2xl shadow-2xl">
+            <h3 class="text-2xl font-bold text-pnw-orange mb-6">Add New Deal</h3>
+            <form @submit.prevent="addDeal" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="form-label">Deal Title</label>
+                  <input
+                    v-model="newDeal.title"
+                    type="text"
+                    class="form-input"
+                    placeholder="50% Off Coffee"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="form-label">Discount Amount</label>
+                  <input
+                    v-model="newDeal.discount"
+                    type="text"
+                    class="form-input"
+                    placeholder="50% or $10 off"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="form-label">Description</label>
+                <textarea
+                  v-model="newDeal.description"
+                  class="form-input"
+                  rows="4"
+                  placeholder="Describe your deal in detail..."
+                  required
+                ></textarea>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="form-label">Start Date</label>
+                  <input
+                    v-model="newDeal.start_date"
+                    type="date"
+                    class="form-input"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="form-label">End Date</label>
+                  <input
+                    v-model="newDeal.end_date"
+                    type="date"
+                    class="form-input"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="text-center">
+                <AnimatedButton type="submit" :loading="loading">
+                  Add Deal
+                </AnimatedButton>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="py-16 px-4 sm:px-6 lg:px-8 section-bg text-center">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold text-pnw-orange mb-12">Your Business Stats</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="stat-card">
+              <div class="text-4xl font-bold text-pnw-orange mb-2">{{ deals.length }}</div>
+              <div class="text-gray-300">Active Deals</div>
+            </div>
+            <div class="stat-card">
+              <div class="text-4xl font-bold text-pnw-orange mb-2">{{ business?.is_premium ? 'Premium' : 'Standard' }}</div>
+              <div class="text-gray-300">Listing Type</div>
+            </div>
+            <div class="stat-card">
+              <div class="text-4xl font-bold text-pnw-orange mb-2">PNW</div>
+              <div class="text-gray-300">Market Reach</div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-  </template>
-  
-  <script setup>
+  </div>
+</template>
+
+<script setup>
   import { ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   
@@ -260,3 +367,17 @@
     router.push('/');
   };
   </script>
+
+<style scoped>
+.stat-card {
+  @apply p-6 rounded-xl backdrop-blur-md transition-all duration-300;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-card:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+</style>

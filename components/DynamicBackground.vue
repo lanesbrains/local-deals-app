@@ -93,7 +93,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useLocalImages } from "@/composables/useLocalImages";
+import { useLocalImages } from "~/composables/useLocalImages";
 
 const { images, loading, error, fetchLocationImages } = useLocalImages();
 
