@@ -3,14 +3,23 @@ import { Resend } from "resend";
 import { format } from "date-fns";
 
 export const handler = async (event, context) => {
-  try {
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_ANON_KEY
-    );
-    const resend = new Resend(process.env.RESEND_API_KEY);
+  const triggerSource = event?.headers?.["x-nf-scheduled"]
+    ? "schedule"
+    : "manual";
+  console.log(`send-deal-notifications triggered via: ${triggerSource}`);
 
-    // Fetch active users with their categories and subcategories
+  try {
+    // Validate environment variables early
+    const { SUPABASE_URL, SUPABASE_ANON_KEY, RESEND_API_KEY, APP_URL } =
+      process.env;
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !RESEND_API_KEY || !APP_URL) {
+      throw new Error("Missing one or more required environment variables.");
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const resend = new Resend(RESEND_API_KEY);
+
+    // Fetch active users with categories and subcategories
     const { data: users, error: userError } = await supabase
       .from("users")
       .select(
@@ -24,7 +33,8 @@ export const handler = async (event, context) => {
       .eq("subscriptions.plan_type", "newsletter");
 
     if (userError) throw new Error(`Supabase user error: ${userError.message}`);
-    if (!users || users.length === 0) {
+    if (!users?.length) {
+      console.log("No active subscribers found");
       return {
         statusCode: 200,
         body: JSON.stringify({ message: "No active subscribers found" }),
@@ -45,7 +55,8 @@ export const handler = async (event, context) => {
 
     if (dealError) throw new Error(`Supabase deal error: ${dealError.message}`);
 
-    // Send personalized emails
+    let sentCount = 0;
+
     for (const user of users) {
       const userCategories =
         user.user_categories?.map((c) => c.category_id) || [];
@@ -60,7 +71,7 @@ export const handler = async (event, context) => {
               userSubcategories.includes(deal.businesses.subcategory_id)))
       );
 
-      if (personalizedDeals.length === 0) continue;
+      if (!personalizedDeals.length) continue;
 
       const emailContent = `
         <h1 style="color: #F28C38;">Your Weekly PNW Deals!</h1>
@@ -70,17 +81,17 @@ export const handler = async (event, context) => {
           ${personalizedDeals
             .map(
               (deal) => `
-            <li>
-              <strong>${deal.title}</strong> at 
-              <a href="${process.env.APP_URL}/business/${deal.businesses?.slug || "missing-slug-" + deal.businesses.id}" 
-                 style="color: #E8B923;">${deal.businesses?.name}</a>
-              <p>${deal.description}</p>
-            </li>
-          `
+                <li>
+                  <strong>${deal.title}</strong> at 
+                  <a href="${APP_URL}/business/${deal.businesses?.slug || `missing-slug-${deal.businesses.id}`}" 
+                     style="color: #E8B923;">${deal.businesses?.name}</a>
+                  <p>${deal.description}</p>
+                </li>
+              `
             )
             .join("")}
         </ul>
-        <p>Want to update your preferences? Visit <a href="${process.env.APP_URL}/preferences" style="color: #E8B923;">your dashboard</a>.</p>
+        <p>Want to update your preferences? Visit <a href="${APP_URL}/preferences" style="color: #E8B923;">your dashboard</a>.</p>
         <p style="color: #4A5568;">&copy; ${format(new Date(), "yyyy")} PNW Deals</p>
       `;
 
@@ -90,11 +101,17 @@ export const handler = async (event, context) => {
         subject: `Your PNW Deals Newsletter - ${format(new Date(), "MMMM d, yyyy")}`,
         html: emailContent,
       });
+
+      sentCount++;
     }
+
+    console.log(`Successfully sent ${sentCount} newsletters`);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: "Newsletter sent successfully" }),
+      body: JSON.stringify({
+        message: `Newsletter sent to ${sentCount} subscribers`,
+      }),
     };
   } catch (error) {
     console.error("Error sending newsletter:", error);
