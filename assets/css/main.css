@@ -6,10 +6,8 @@
 
 body {
   font-family: 'Montserrat', sans-serif;
-  @apply bg-gray-500/80 text-gray-100;
-  background-image: url('/forest-texture.jpg'); /* Add a subtle forest texture */
-  background-size: cover;
-  background-attachment: fixed;
+  @apply text-white;
+  /* Background is now handled by DynamicBackground component */
 }
 
 h1, h2, h3 {
@@ -22,20 +20,23 @@ p, label, input, button {
 }
 
 .animated-button {
-  @apply relative px-6 py-3 rounded-lg font-semibold text-lg bg-orange-600 text-white transition-all duration-300 ease-in-out;
+  @apply relative px-6 py-3 rounded-lg font-semibold text-lg text-white transition-all duration-300 ease-in-out shadow-lg;
+  background: linear-gradient(135deg, #F28C38, #E8B923);
 }
 
 .animated-button:hover {
-  @apply scale-105 shadow-lg opacity-90;
-  background: linear-gradient(45deg, #D95F0E, #E8B923);
+  @apply scale-105 shadow-xl;
+  background: linear-gradient(135deg, #E8B923, #F28C38);
+  box-shadow: 0 10px 25px rgba(242, 140, 56, 0.4);
 }
 
 .deal-card, .business-card {
-  @apply bg-gray-800/90 rounded-lg shadow-md p-6 transition-all duration-300 ease-in-out;
+  @apply bg-white/10 backdrop-blur-md rounded-xl shadow-lg p-6 transition-all duration-300 ease-in-out border border-white/20;
 }
 
 .deal-card:hover, .business-card:hover {
-  @apply shadow-xl bg-gray-800/95 translate-y-[-4px];
+  @apply shadow-2xl bg-white/20 translate-y-[-4px] border-orange-400/50;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .nav-link {
@@ -43,25 +44,34 @@ p, label, input, button {
 }
 
 .hero-section {
-  @apply bg-cover bg-center py-16 px-4 sm:px-6 lg:px-8;
-  background-image: url('/pnw-mountains.jpg'); /* Add a Pacific Northwest mountain background */
+  @apply py-20 px-4 sm:px-6 lg:px-8 relative;
+  /* Background is now handled by DynamicBackground component */
 }
 
-/* Additional dark grey backgrounds with opacity */
+/* Glass morphism backgrounds */
 .header-bg {
-  @apply bg-gray-900/85;
+  @apply bg-white/10 backdrop-blur-md border-b border-white/20;
 }
 
 .sidebar-bg {
-  @apply bg-gray-800/85;
+  @apply bg-white/10 backdrop-blur-md border-r border-white/20;
 }
 
 .modal-bg {
-  @apply bg-gray-900/90;
+  @apply bg-white/10 backdrop-blur-md border border-white/20;
 }
 
 .card-bg {
-  @apply bg-gray-700/80;
+  @apply bg-white/10 backdrop-blur-md border border-white/20;
+}
+
+/* Section backgrounds with glass effect */
+.section-bg {
+  @apply bg-white/5 backdrop-blur-sm border-y border-white/10;
+}
+
+.section-bg-alt {
+  @apply bg-black/20 backdrop-blur-sm border-y border-white/10;
 }
 
 .fade-in {

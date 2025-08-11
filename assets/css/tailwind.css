@@ -4,8 +4,8 @@
 @tailwind utilities;
 
 .hero-section {
-  @apply bg-pnw-evergreen bg-cover bg-center py-16 px-4;
-  background-image: url('/forest-texture.jpg');
+  @apply py-16 px-4;
+  /* Background is now handled by DynamicBackground component */
 }
 
 .deal-card {

@@ -6,8 +6,8 @@
       <p class="text-lg text-gray-300 mb-8 fade-in">Join our newsletter for just $1/month and get the best local deals!</p>
       <NuxtLink to="#signup" class="animated-button inline-block">Join Now</NuxtLink>
     </section>
-    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-900">
-      <h2 class="text-3xl font-bold text-orange-500 mb-6 text-center fade-in">Newest Businesses</h2>
+    <section class="py-12 px-4 sm:px-6 lg:px-8 section-bg">
+      <h2 class="text-3xl font-bold text-orange-400 mb-6 text-center fade-in">Newest Businesses</h2>
       <div v-if="error" class="text-center text-red-500 mb-4">{{ error }}</div>
       <div v-if="loading" class="text-center text-gray-300">Loading businesses...</div>
       <div v-else-if="recentBusinesses.length" class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -17,28 +17,41 @@
       </div>
       <div v-else class="text-center text-gray-300">No businesses yet.</div>
     </section>
-    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-800" id="signup">
-      <h2 class="text-3xl font-bold text-orange-500 mb-6 text-center fade-in">Join Our Newsletter</h2>
-      <p class="text-lg text-gray-300 mb-8 text-center">Pick your favorite categories and get tailored deals!</p>
-      <form @submit.prevent="handleSignup" class="max-w-md mx-auto bg-gray-800 p-8 rounded-xl shadow-lg">
-        <div class="mb-6">
-          <label class="block text-gray-300 font-semibold mb-2">Your Email</label>
-          <input
-            v-model="email"
-            type="email"
-            class="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-            required
-          />
-        </div>
-        <div class="mb-6">
-          <label class="block text-gray-300 font-semibold mb-2">Pick Your Interests</label>
-          <CategoryFilter v-model="selectedCategories" :includeSubcategories="true" />
-        </div>
-        <AnimatedButton type="submit" :loading="loading">Join for $1/month</AnimatedButton>
-      </form>
+    <section class="py-16 px-4 sm:px-6 lg:px-8 section-bg-alt" id="signup">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-4xl font-bold text-orange-400 mb-6 text-center fade-in">Join Our Newsletter</h2>
+        <p class="text-xl text-white/90 mb-12 text-center max-w-2xl mx-auto">Pick your favorite categories and get tailored deals delivered to your inbox!</p>
+        
+        <form @submit.prevent="handleSignup" class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/20">
+          <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Email Input -->
+            <div class="lg:col-span-1">
+              <label class="block text-gray-300 font-semibold mb-3 text-lg">Your Email</label>
+              <input
+                v-model="email"
+                type="email"
+                placeholder="your@email.com"
+                class="w-full p-4 border border-gray-600 rounded-xl bg-gray-700/50 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+                required
+              />
+              <div class="mt-6">
+                <AnimatedButton type="submit" :loading="loading" class="w-full">
+                  Join for $1/month
+                </AnimatedButton>
+              </div>
+            </div>
+            
+            <!-- Interests Selection -->
+            <div class="lg:col-span-2">
+              <label class="block text-gray-300 font-semibold mb-3 text-lg">Pick Your Interests</label>
+              <CategoryFilter v-model="selectedCategories" :includeSubcategories="true" />
+            </div>
+          </div>
+        </form>
+      </div>
     </section>
-    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-900">
-      <h2 class="text-3xl font-bold text-orange-500 mb-6 text-center fade-in">What People Are Saying</h2>
+    <section class="py-12 px-4 sm:px-6 lg:px-8 section-bg">
+      <h2 class="text-3xl font-bold text-orange-400 mb-6 text-center fade-in">What People Are Saying</h2>
       <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div class="deal-card text-center">
           <p class="text-gray-300 italic">"Found an awesome coffee deal in Seattle!"</p>
@@ -50,9 +63,9 @@
         </div>
       </div>
     </section>
-    <section class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-800 text-center">
-      <h2 class="text-3xl font-bold text-orange-500 mb-6 fade-in">Own a Business?</h2>
-      <p class="text-lg text-gray-300 mb-8">Join our directory for $5/month and get your deals in front of thousands!</p>
+    <section class="py-12 px-4 sm:px-6 lg:px-8 section-bg-alt text-center">
+      <h2 class="text-3xl font-bold text-orange-400 mb-6 fade-in">Own a Business?</h2>
+      <p class="text-xl text-white/90 mb-8">Join our directory for $5/month and get your deals in front of thousands!</p>
       <NuxtLink to="/business-signup" class="animated-button inline-block">List Your Business</NuxtLink>
     </section>
   </div>

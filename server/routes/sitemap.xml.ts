@@ -14,12 +14,12 @@ export default defineEventHandler(async (event) => {
   
   // You can add dynamic routes here by fetching from your database
   // For example, business pages:
-  // const { data: businesses } = await supabase.from('businesses').select('slug')
-  // const businessRoutes = businesses?.map(business => ({
-  //   url: `/business/${business.slug}`,
-  //   changefreq: 'weekly',
-  //   priority: 0.6
-  // })) || []
+  const { data: businesses } = await supabase.from('businesses').select('slug')
+  const businessRoutes = businesses?.map(business => ({
+    url: `/business/${business.slug}`,
+    changefreq: 'weekly',
+    priority: 0.6
+  })) || []
   
   const allRoutes = [...staticRoutes] // Add ...businessRoutes when you have dynamic routes
   
