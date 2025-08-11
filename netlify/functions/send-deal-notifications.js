@@ -47,15 +47,15 @@ export const handler = async (event, context) => {
 
     // Send personalized emails
     for (const user of users) {
-      const userCategories = user.user_categories.map((c) => c.category_id);
-      const userSubcategories = user.user_subcategories.map(
-        (s) => s.subcategory_id
-      );
+      const userCategories =
+        user.user_categories?.map((c) => c.category_id) || [];
+      const userSubcategories =
+        user.user_subcategories?.map((s) => s.subcategory_id) || [];
 
       const personalizedDeals = deals.filter(
         (deal) =>
-          userCategories.includes(deal.businesses.category_id) ||
-          (deal.businesses.subcategory_id &&
+          userCategories.includes(deal.businesses?.category_id) ||
+          (deal.businesses?.subcategory_id &&
             userSubcategories.includes(deal.businesses.subcategory_id))
       );
 
@@ -71,8 +71,8 @@ export const handler = async (event, context) => {
               (deal) => `
             <li>
               <strong>${deal.title}</strong> at 
-              <a href="${process.env.APP_URL}/business/${deal.businesses.slug}" 
-                 style="color: #E8B923;">${deal.businesses.name}</a>
+              <a href="${process.env.APP_URL}/business/${deal.businesses?.slug || "missing-slug-" + deal.businesses.id}" 
+                 style="color: #E8B923;">${deal.businesses?.name}</a>
               <p>${deal.description}</p>
             </li>
           `

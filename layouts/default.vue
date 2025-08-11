@@ -5,6 +5,8 @@
 </template>
 
 <script setup>
+import { useRoute, useRuntimeConfig } from '#app';
+
 useHead({
   titleTemplate: (title) => `${title ? `${title} | ` : ''}PNW Deals - Local Offers & Directory`,
   meta: [
@@ -19,13 +21,14 @@ useHead({
   ],
 });
 
-// Dynamically set canonical URL based on current route
+// Safely compute canonical URL
 const route = useRoute();
-const canonicalUrl = computed(() => `${useRuntimeConfig().public.appUrl}${route.fullPath}`);
+const { public: { appUrl } } = useRuntimeConfig();
+const canonicalUrl = computed(() => `${appUrl}${route.fullPath}`);
 
 useHead({
   link: [
-    { rel: 'canonical', href: canonicalUrl },
+    { rel: 'canonical', hid: 'canonical', href: canonicalUrl },
   ],
 });
 </script>

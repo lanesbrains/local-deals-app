@@ -8,4 +8,4 @@
 
 [[functions]]
   name = "send-deal-notifications"
-  schedule = "@daily"
+  schedule = "@weekly"
