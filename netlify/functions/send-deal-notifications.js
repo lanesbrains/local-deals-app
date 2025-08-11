@@ -54,9 +54,10 @@ export const handler = async (event, context) => {
 
       const personalizedDeals = deals.filter(
         (deal) =>
-          userCategories.includes(deal.businesses?.category_id) ||
-          (deal.businesses?.subcategory_id &&
-            userSubcategories.includes(deal.businesses.subcategory_id))
+          deal.businesses &&
+          (userCategories.includes(deal.businesses.category_id) ||
+            (deal.businesses.subcategory_id &&
+              userSubcategories.includes(deal.businesses.subcategory_id)))
       );
 
       if (personalizedDeals.length === 0) continue;
