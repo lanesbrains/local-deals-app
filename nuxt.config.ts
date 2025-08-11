@@ -24,9 +24,24 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxtjs/tailwindcss'],
-  compatibilityDate: '2025-08-08',
-  middleware: {
-    'manifest-route-rule': { override: true }, // Add this to suppress warning
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sitemap'],
+  
+  sitemap: {
+    hostname: process.env.APP_URL || 'https://your-domain.com',
+    gzip: true,
+    routes: async () => {
+      // You can add dynamic routes here if needed
+      // For example, if you have dynamic business pages
+      return [
+        '/',
+        '/directory',
+        '/business-signup',
+        '/business-portal',
+        '/success',
+        '/cancel'
+      ]
+    }
   },
+  
+  compatibilityDate: '2025-08-08',
 });
