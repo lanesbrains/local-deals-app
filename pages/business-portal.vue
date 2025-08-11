@@ -253,7 +253,12 @@
   const phone = ref('');
   const address = ref('');
   const socialMedia = ref({ twitter: '', instagram: '' });
-  const newDeal = ref({ title: '', description: '', expires_at: '' });
+  const newDeal = ref({ 
+    title: '', 
+    description: '', 
+    start_date: '', 
+    end_date: '' 
+  });
   const loading = ref(false);
   
   onMounted(async () => {
@@ -332,10 +337,11 @@
           business_id: business.value.id,
           title: newDeal.value.title,
           description: newDeal.value.description,
-          expires_at: newDeal.value.expires_at || null,
+          start_date: newDeal.value.start_date || null,
+          end_date: newDeal.value.end_date || null,
         });
       if (error) throw error;
-      newDeal.value = { title: '', description: '', expires_at: '' };
+      newDeal.value = { title: '', description: '', start_date: '', end_date: '' };
       window.location.reload(); // Refresh to update deals
     } catch (error) {
       alert('Oops! Something went wrong. Try again.');

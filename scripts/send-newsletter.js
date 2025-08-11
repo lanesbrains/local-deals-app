@@ -24,13 +24,13 @@ async function sendNewsletter() {
       .eq("status", "active");
     if (subError) throw subError;
 
-    // Fetch deals
+    // Fetch deals with business information
     const { data: deals, error: dealError } = await supabase
       .from("deals")
       .select(
         `
-        id, title, description,
-        businesses(id, name, slug, category_id, subcategory_id)
+        id, title, description, start_date, end_date,
+        businesses(id, name, slug, description, category_id, subcategory_id)
       `
       )
       .order("created_at", { ascending: false });
@@ -62,13 +62,18 @@ async function sendNewsletter() {
               (deal) => `
                 <li>
                   <h3>${deal.title}</h3>
-                  <p>${deal.description}</p>
+                  <p><strong>Business:</strong> ${deal.businesses.name}</p>
+                  <p><strong>Business Description:</strong> ${deal.businesses.description || 'No description available'}</p>
+                  <p><strong>Deal:</strong> ${deal.description}</p>
+                  ${deal.start_date ? `<p><strong>Starts:</strong> ${new Date(deal.start_date).toLocaleDateString()}</p>` : ''}
+                  ${deal.end_date ? `<p><strong>Ends:</strong> ${new Date(deal.end_date).toLocaleDateString()}</p>` : ''}
                   <a href="${process.env.APP_URL}/business/${deal.businesses.slug}">View Deal</a>
                 </li>
               `
             )
             .join("")}
         </ul>
+        <p>Thanks for subscribing to PNW Deals!</p>
       `;
 
       await resend.emails.send({
