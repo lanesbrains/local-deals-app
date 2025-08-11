@@ -1,84 +1,354 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Modern CSS Reset and Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  @apply text-white bg-gray-900;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif;
-  @apply text-white;
-  /* Background is now handled by DynamicBackground component */
+  @apply font-bold tracking-tight;
+  line-height: 1.2;
 }
 
-h1, h2, h3 {
-  font-family: 'Montserrat', sans-serif;
-  @apply font-bold;
+h1 {
+  @apply text-4xl md:text-5xl lg:text-6xl;
 }
 
-p, label, input, button {
-  font-family: 'Open Sans', sans-serif;
+h2 {
+  @apply text-3xl md:text-4xl lg:text-5xl;
 }
 
+h3 {
+  @apply text-2xl md:text-3xl;
+}
+
+h4 {
+  @apply text-xl md:text-2xl;
+}
+
+p, label, input, button, a {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Enhanced Button Styles */
 .animated-button {
-  @apply relative px-6 py-3 rounded-lg font-semibold text-lg text-white transition-all duration-300 ease-in-out shadow-lg;
+  @apply relative px-6 py-3 rounded-xl font-semibold text-lg text-white transition-all duration-300 ease-out shadow-lg;
   background: linear-gradient(135deg, #F28C38, #E8B923);
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.animated-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.animated-button:hover::before {
+  left: 100%;
 }
 
 .animated-button:hover {
   @apply scale-105 shadow-xl;
   background: linear-gradient(135deg, #E8B923, #F28C38);
-  box-shadow: 0 10px 25px rgba(242, 140, 56, 0.4);
+  box-shadow: 0 20px 40px rgba(242, 140, 56, 0.4);
+  transform: translateY(-2px);
 }
 
+.animated-button:active {
+  transform: translateY(0) scale(1.02);
+}
+
+/* Modern Card Styles */
 .deal-card, .business-card {
-  @apply bg-white/10 backdrop-blur-md rounded-xl shadow-lg p-6 transition-all duration-300 ease-in-out border border-white/20;
+  @apply backdrop-blur-xl rounded-2xl shadow-xl p-6 transition-all duration-500 ease-out;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.deal-card::before, .business-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(242, 140, 56, 0.5), transparent);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.deal-card:hover::before, .business-card:hover::before {
+  transform: scaleX(1);
 }
 
 .deal-card:hover, .business-card:hover {
-  @apply shadow-2xl bg-white/20 translate-y-[-4px] border-orange-400/50;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  @apply shadow-2xl translate-y-[-8px];
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(242, 140, 56, 0.3);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+  transform: translateY(-8px) scale(1.02);
 }
 
+/* Navigation Styles */
 .nav-link {
-  @apply text-gray-300 hover:text-orange-500 transition-colors duration-200;
+  @apply text-gray-300 hover:text-pnw-orange transition-all duration-300 relative;
+  position: relative;
 }
 
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #F28C38, #E8B923);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link.active {
+  @apply text-pnw-orange font-semibold;
+}
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Hero Section */
 .hero-section {
   @apply py-20 px-4 sm:px-6 lg:px-8 relative;
-  /* Background is now handled by DynamicBackground component */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
-/* Glass morphism backgrounds */
+/* Glass Morphism Components */
 .header-bg {
-  @apply bg-white/10 backdrop-blur-md border-b border-white/20;
+  @apply backdrop-blur-xl border-b border-white/10 shadow-lg;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-bg {
-  @apply bg-white/10 backdrop-blur-md border-r border-white/20;
+  @apply backdrop-blur-xl border-r border-white/10;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .modal-bg {
-  @apply bg-white/10 backdrop-blur-md border border-white/20;
+  @apply backdrop-blur-xl border border-white/10 shadow-2xl;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .card-bg {
-  @apply bg-white/10 backdrop-blur-md border border-white/20;
+  @apply backdrop-blur-xl border border-white/10 shadow-lg;
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Section backgrounds with glass effect */
+/* Section Backgrounds */
 .section-bg {
-  @apply bg-white/5 backdrop-blur-sm border-y border-white/10;
+  @apply backdrop-blur-sm border-y border-white/5;
+  background-color: rgba(255, 255, 255, 0.03);
+  position: relative;
+}
+
+.section-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(242, 140, 56, 0.05) 0%, transparent 50%, rgba(232, 185, 35, 0.05) 100%);
+  pointer-events: none;
 }
 
 .section-bg-alt {
-  @apply bg-black/20 backdrop-blur-sm border-y border-white/10;
+  @apply backdrop-blur-sm border-y border-white/5;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
+/* Enhanced Animations */
 .fade-in {
-  animation: fadeIn 1s ease-in-out;
+  animation: fadeInUp 1s ease-out;
 }
 
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.8s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Form Styles */
+.form-input {
+  @apply w-full p-4 border border-gray-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pnw-orange/50 focus:border-pnw-orange/50 transition-all duration-300 backdrop-blur-sm;
+  background-color: rgba(31, 41, 55, 0.5);
+}
+
+.form-input:focus {
+  background-color: rgba(31, 41, 55, 0.7);
+  box-shadow: 0 0 0 3px rgba(242, 140, 56, 0.1);
+}
+
+.form-label {
+  @apply block text-gray-300 font-semibold mb-3 text-lg;
+}
+
+/* Loading States */
+.loading-spinner {
+  @apply inline-block w-6 h-6 border-2 border-gray-300 border-t-pnw-orange rounded-full animate-spin;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-pnw-orange/50 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-pnw-orange/70;
+}
+
+/* Focus States */
+.focus-visible {
+  @apply outline-none ring-2 ring-pnw-orange/50 ring-offset-2 ring-offset-gray-900;
+}
+
+/* Utility Classes */
+.text-gradient {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-pnw-orange to-pnw-yellow;
+}
+
+.bg-gradient-pnw {
+  background: linear-gradient(135deg, #F28C38 0%, #E8B923 100%);
+}
+
+.border-gradient {
+  border-image: linear-gradient(135deg, #F28C38, #E8B923) 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    @apply py-16;
+  }
+  
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  .deal-card, .business-card {
+    @apply p-4;
+  }
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  body {
+    @apply bg-gray-900;
+  }
+}
+
+/* Print styles */
+@media print {
+  .animated-button,
+  .deal-card:hover,
+  .business-card:hover {
+    transform: none !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .deal-card, .business-card {
+    @apply border-2 border-white;
+  }
+  
+  .animated-button {
+    @apply border-2 border-white;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

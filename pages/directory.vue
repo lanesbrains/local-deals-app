@@ -1,5 +1,5 @@
 <template>
-  <div class="py-12 px-4 sm:px-6 lg:px-8 bg-gray-900">
+  <div class="py-12 px-4 sm:px-6 lg:px-8">
     <h1 class="text-4xl sm:text-5xl font-bold text-orange-500 mb-8 text-center fade-in">PNW Business Directory</h1>
     <div class="max-w-4xl mx-auto mb-10">
       <input
