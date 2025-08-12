@@ -8,7 +8,13 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "cleanup": "nuxt cleanup"
+    "cleanup": "nuxt cleanup",
+    "check-db": "node scripts/check-database-schema.js",
+    "test-deals": "node scripts/test-deals-flow.js",
+    "test-newsletter": "node scripts/test-weekly-newsletter.js",
+    "production-check": "node scripts/production-checklist.js",
+    "send-weekly-newsletter": "node scripts/send-newsletter.js",
+    "setup-data": "node scripts/setup-sample-data.js"
   },
   "dependencies": {
     "@nuxtjs/sitemap": "^7.4.3",

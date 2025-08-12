@@ -10,4 +10,4 @@
 
 [[scheduled]]
   function = "send-deal-notifications"
-  cron = "@weekly"
+  cron = "0 9 * * 1"  # Every Monday at 9 AM UTC

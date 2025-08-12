@@ -5,7 +5,9 @@
         <!-- Enhanced Logo -->
         <NuxtLink to="/" class="flex items-center space-x-3 group">
           <div class="logo-container">
-            <span class="text-2xl font-bold text-pnw-yellow group-hover:text-pnw-orange transition-colors duration-300">
+            <span
+              class="text-2xl font-bold text-pnw-yellow group-hover:text-pnw-orange transition-colors duration-300"
+            >
               PNW Deals
             </span>
             <div class="logo-underline"></div>
@@ -14,11 +16,7 @@
 
         <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center space-x-8">
-          <NuxtLink
-            to="/"
-            class="nav-link"
-            active-class="nav-link active"
-          >
+          <NuxtLink to="/" class="nav-link" active-class="nav-link active">
             Home
           </NuxtLink>
           <NuxtLink
@@ -27,6 +25,9 @@
             active-class="nav-link active"
           >
             Directory
+          </NuxtLink>
+          <NuxtLink to="/blog" class="nav-link" active-class="nav-link active">
+            Blog
           </NuxtLink>
           <NuxtLink
             to="/business-signup"
@@ -42,12 +43,9 @@
           >
             Preferences
           </NuxtLink>
-          
+
           <!-- CTA Button -->
-          <NuxtLink 
-            to="/business-signup" 
-            class="cta-button"
-          >
+          <NuxtLink to="/business-signup" class="cta-button">
             Get Started
           </NuxtLink>
         </div>
@@ -76,10 +74,7 @@
         leave-from-class="opacity-100 transform translate-y-0"
         leave-to-class="opacity-0 transform -translate-y-4"
       >
-        <div
-          v-if="isMenuOpen"
-          class="md:hidden mobile-menu"
-        >
+        <div v-if="isMenuOpen" class="md:hidden mobile-menu">
           <div class="mobile-menu-content">
             <NuxtLink
               to="/"
@@ -100,6 +95,15 @@
               Directory
             </NuxtLink>
             <NuxtLink
+              to="/blog"
+              class="mobile-nav-link"
+              active-class="mobile-nav-link active"
+              @click="closeMenu"
+            >
+              <span class="mobile-nav-icon">📝</span>
+              Blog
+            </NuxtLink>
+            <NuxtLink
               to="/business-signup"
               class="mobile-nav-link"
               active-class="mobile-nav-link active"
@@ -117,11 +121,11 @@
               <span class="mobile-nav-icon">⚙️</span>
               Preferences
             </NuxtLink>
-            
+
             <!-- Mobile CTA -->
             <div class="mobile-cta">
-              <NuxtLink 
-                to="/business-signup" 
+              <NuxtLink
+                to="/business-signup"
                 class="mobile-cta-button"
                 @click="closeMenu"
               >
@@ -136,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from "vue";
 
 const isMenuOpen = ref(false);
 
@@ -144,20 +148,20 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
   // Prevent body scroll when menu is open
   if (isMenuOpen.value) {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
   } else {
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   }
 };
 
 const closeMenu = () => {
   isMenuOpen.value = false;
-  document.body.style.overflow = '';
+  document.body.style.overflow = "";
 };
 
 // Close menu on escape key
 const handleEscape = (event) => {
-  if (event.key === 'Escape' && isMenuOpen.value) {
+  if (event.key === "Escape" && isMenuOpen.value) {
     closeMenu();
   }
 };
@@ -170,14 +174,14 @@ const handleResize = () => {
 };
 
 onMounted(() => {
-  document.addEventListener('keydown', handleEscape);
-  window.addEventListener('resize', handleResize);
+  document.addEventListener("keydown", handleEscape);
+  window.addEventListener("resize", handleResize);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleEscape);
-  window.removeEventListener('resize', handleResize);
-  document.body.style.overflow = '';
+  document.removeEventListener("keydown", handleEscape);
+  window.removeEventListener("resize", handleResize);
+  document.body.style.overflow = "";
 });
 </script>
 
@@ -193,7 +197,7 @@ onUnmounted(() => {
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #F28C38, #E8B923);
+  background: linear-gradient(90deg, #f28c38, #e8b923);
   transition: width 0.3s ease;
 }
 
@@ -208,13 +212,13 @@ onUnmounted(() => {
 }
 
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -4px;
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #F28C38, #E8B923);
+  background: linear-gradient(90deg, #f28c38, #e8b923);
   transition: width 0.3s ease;
 }
 
@@ -315,7 +319,7 @@ onUnmounted(() => {
 
 .mobile-cta-button {
   @apply w-full text-white px-6 py-3 rounded-xl font-semibold text-center block transition-all duration-300;
-  background: linear-gradient(135deg, #F28C38, #E8B923);
+  background: linear-gradient(135deg, #f28c38, #e8b923);
 }
 
 .mobile-cta-button:hover {
@@ -338,10 +342,18 @@ onUnmounted(() => {
 }
 
 /* Animation delays for mobile menu items */
-.mobile-nav-link:nth-child(1) { animation-delay: 0.1s; }
-.mobile-nav-link:nth-child(2) { animation-delay: 0.2s; }
-.mobile-nav-link:nth-child(3) { animation-delay: 0.3s; }
-.mobile-nav-link:nth-child(4) { animation-delay: 0.4s; }
+.mobile-nav-link:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.mobile-nav-link:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.mobile-nav-link:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.mobile-nav-link:nth-child(4) {
+  animation-delay: 0.4s;
+}
 
 /* Focus states for accessibility */
 .nav-link:focus-visible,
@@ -357,7 +369,7 @@ onUnmounted(() => {
   .mobile-nav-link {
     @apply border border-transparent;
   }
-  
+
   .nav-link:hover,
   .mobile-nav-link:hover {
     @apply border-white;

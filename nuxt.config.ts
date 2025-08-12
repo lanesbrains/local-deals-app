@@ -35,6 +35,7 @@ export default defineNuxtConfig({
       return [
         '/',
         '/directory',
+        '/blog',
         '/business-signup',
         '/business-portal',
         '/success',
