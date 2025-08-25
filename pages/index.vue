@@ -281,7 +281,7 @@ const handleSignup = async () => {
           user_id: authData.user.id,
           email: email.value,
           plan_type: "newsletter",
-          price_id: "price_newsletter_1month",
+          price_id: "prod_SvylU8VEQFV83C",
           success_url: window.location.origin + "/success",
           cancel_url: window.location.origin + "/cancel",
         },
@@ -296,22 +296,16 @@ const handleSignup = async () => {
       throw new Error("Failed to create payment session");
     }
 
-    console.log("Stripe session created, redirecting to checkout...");
+    console.log("Signup successful! Redirecting to check email page...");
 
-    // Step 5: Redirect to Stripe checkout
-    const stripe = await loadStripe(
-      useRuntimeConfig().public.stripePublishableKey
-    );
+    // Store email and session for later use
+    localStorage.setItem("signup_email", email.value);
+    localStorage.setItem("stripe_session_id", sessionData.session_id);
 
-    if (!stripe) {
-      throw new Error("Payment system not available");
-    }
+    // Redirect to check email page
+    await navigateTo(`/check-email?email=${encodeURIComponent(email.value)}`);
 
-    await stripe.redirectToCheckout({ sessionId: sessionData.session_id });
-
-    // Success feedback (only shown if redirect fails)
-    showConfetti.value = true;
-    setTimeout(() => (showConfetti.value = false), 2000);
+    // Reset form
     email.value = "";
     selectedCategories.value = [];
   } catch (error) {

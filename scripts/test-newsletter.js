@@ -1,4 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { config } from "dotenv";
+
+config();
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -23,15 +26,17 @@ async function testNewsletterFlow() {
       )
       .eq("plan_type", "newsletter")
       .eq("status", "active");
-    
+
     if (subError) {
       console.error("❌ Error fetching subscribers:", subError);
       return;
     }
-    
+
     console.log(`✅ Found ${subscribers.length} active subscribers`);
-    subscribers.forEach(sub => {
-      console.log(`   - ${sub.users.email} (Categories: ${sub.user_categories.length}, Subcategories: ${sub.user_subcategories.length})`);
+    subscribers.forEach((sub) => {
+      console.log(
+        `   - ${sub.users.email} (Categories: ${sub.user_categories.length}, Subcategories: ${sub.user_subcategories.length})`
+      );
     });
 
     // 2. Test: Check if we have deals
@@ -45,27 +50,31 @@ async function testNewsletterFlow() {
       `
       )
       .order("created_at", { ascending: false });
-    
+
     if (dealError) {
       console.error("❌ Error fetching deals:", dealError);
       return;
     }
-    
+
     console.log(`✅ Found ${deals.length} deals`);
-    deals.forEach(deal => {
+    deals.forEach((deal) => {
       console.log(`   - ${deal.title} (${deal.businesses.name})`);
-      console.log(`     Business Description: ${deal.businesses.description ? 'Yes' : 'No'}`);
-      console.log(`     Deal Description: ${deal.description ? 'Yes' : 'No'}`);
-      console.log(`     Start Date: ${deal.start_date || 'None'}`);
-      console.log(`     End Date: ${deal.end_date || 'None'}`);
+      console.log(
+        `     Business Description: ${deal.businesses.description ? "Yes" : "No"}`
+      );
+      console.log(`     Deal Description: ${deal.description ? "Yes" : "No"}`);
+      console.log(`     Start Date: ${deal.start_date || "None"}`);
+      console.log(`     End Date: ${deal.end_date || "None"}`);
     });
 
     // 3. Test: Match deals to subscribers
     console.log("\n3. Testing deal matching...");
     for (const subscriber of subscribers) {
       const user = subscriber.users;
-      const userCategories = subscriber.user_categories.map((c) => c.category_id) || [];
-      const userSubcategories = subscriber.user_subcategories.map((s) => s.subcategory_id) || [];
+      const userCategories =
+        subscriber.user_categories.map((c) => c.category_id) || [];
+      const userSubcategories =
+        subscriber.user_subcategories.map((s) => s.subcategory_id) || [];
 
       const relevantDeals = deals.filter((deal) => {
         const business = deal.businesses;
@@ -76,12 +85,14 @@ async function testNewsletterFlow() {
       });
 
       console.log(`\n   📧 ${user.email}:`);
-      console.log(`      Categories: ${userCategories.join(', ') || 'None'}`);
-      console.log(`      Subcategories: ${userSubcategories.join(', ') || 'None'}`);
+      console.log(`      Categories: ${userCategories.join(", ") || "None"}`);
+      console.log(
+        `      Subcategories: ${userSubcategories.join(", ") || "None"}`
+      );
       console.log(`      Relevant deals: ${relevantDeals.length}`);
-      
+
       if (relevantDeals.length > 0) {
-        relevantDeals.forEach(deal => {
+        relevantDeals.forEach((deal) => {
           console.log(`        - ${deal.title} (${deal.businesses.name})`);
         });
       }
@@ -92,15 +103,17 @@ async function testNewsletterFlow() {
     const { data: businesses, error: businessError } = await supabase
       .from("businesses")
       .select("id, name, description, category_id, subcategory_id");
-    
+
     if (businessError) {
       console.error("❌ Error fetching businesses:", businessError);
       return;
     }
-    
+
     console.log(`✅ Found ${businesses.length} businesses`);
-    businesses.forEach(business => {
-      console.log(`   - ${business.name}: ${business.description ? 'Has description' : 'No description'}`);
+    businesses.forEach((business) => {
+      console.log(
+        `   - ${business.name}: ${business.description ? "Has description" : "No description"}`
+      );
     });
 
     console.log("\n🎉 Newsletter flow test completed!");
@@ -108,8 +121,9 @@ async function testNewsletterFlow() {
     console.log(`   - Subscribers: ${subscribers.length}`);
     console.log(`   - Deals: ${deals.length}`);
     console.log(`   - Businesses: ${businesses.length}`);
-    console.log(`   - Businesses with descriptions: ${businesses.filter(b => b.description).length}`);
-
+    console.log(
+      `   - Businesses with descriptions: ${businesses.filter((b) => b.description).length}`
+    );
   } catch (error) {
     console.error("❌ Test failed:", error);
   }
