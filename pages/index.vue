@@ -296,14 +296,19 @@ const handleSignup = async () => {
       throw new Error("Failed to create payment session");
     }
 
-    console.log("Signup successful! Redirecting to check email page...");
+    console.log("Signup successful! Storing preferences and redirecting...");
 
-    // Store email and session for later use
-    localStorage.setItem("signup_email", email.value);
-    localStorage.setItem("stripe_session_id", sessionData.session_id);
+    // Store category names for thank you page
+    const categoryNames = selectedCategories.value.map(
+      (cat) => cat.name || "Unknown Category"
+    );
+    localStorage.setItem(
+      "selected_category_names",
+      JSON.stringify(categoryNames)
+    );
 
-    // Redirect to check email page
-    await navigateTo(`/check-email?email=${encodeURIComponent(email.value)}`);
+    // Show immediate thank you message
+    await navigateTo("/signup-success");
 
     // Reset form
     email.value = "";
