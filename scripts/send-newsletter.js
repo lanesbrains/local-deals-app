@@ -1,6 +1,10 @@
+import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import { format, subDays } from "date-fns";
+
+// Load environment variables from .env file
+config();
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -20,22 +24,36 @@ async function sendWeeklyNewsletter() {
       `📅 Fetching deals created since: ${format(oneWeekAgo, "MMM d, yyyy")}`
     );
 
-    // Fetch active subscribers with their ORIGINAL category preferences
-    const { data: subscribers, error: subError } = await supabase
+    // Fetch active newsletter subscribers
+    const { data: activeSubscriptions, error: subError } = await supabase
+      .from("subscriptions")
+      .select("user_id")
+      .eq("status", "active")
+      .eq("plan_type", "newsletter");
+
+    if (subError) throw subError;
+
+    if (!activeSubscriptions || activeSubscriptions.length === 0) {
+      console.log("No active newsletter subscribers found. Exiting.");
+      return;
+    }
+
+    const userIds = activeSubscriptions.map((sub) => sub.user_id);
+
+    // Fetch user details and preferences for active subscribers
+    const { data: subscribers, error: userError } = await supabase
       .from("users")
       .select(
         `
         user_id, 
         email,
         user_categories(category_id),
-        user_subcategories(subcategory_id),
-        subscriptions!inner(status, plan_type)
+        user_subcategories(subcategory_id)
       `
       )
-      .eq("subscriptions.status", "active")
-      .eq("subscriptions.plan_type", "newsletter");
+      .in("user_id", userIds);
 
-    if (subError) throw subError;
+    if (userError) throw userError;
 
     console.log(
       `👥 Found ${subscribers?.length || 0} active newsletter subscribers`

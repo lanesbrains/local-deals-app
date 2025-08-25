@@ -15,32 +15,80 @@ serve(async (req) => {
   try {
     const sig = req.headers.get('stripe-signature');
     const body = await req.text();
+    
+    if (!sig) {
+      throw new Error('No Stripe signature found');
+    }
+
     const event = stripe.webhooks.constructEvent(
       body,
-      sig!,
+      sig,
       Deno.env.get('STRIPE_WEBHOOK_SECRET')!
     );
 
-    if (event.type === 'checkout.session.completed') {
-      const session = event.data.object;
-      const { user_id, plan_type, business_id } = session.metadata;
-      const subscription = await stripe.subscriptions.retrieve(session.subscription);
+    console.log(`Processing webhook event: ${event.type}`);
 
-      await supabase.from('subscriptions').insert({
-        user_id,
-        business_id: business_id || null,
-        stripe_subscription_id: subscription.id,
-        plan_type,
-        status: subscription.status,
-      });
-    }
+    switch (event.type) {
+      case 'checkout.session.completed':
+        const session = event.data.object;
+        const { user_id, plan_type, business_id } = session.metadata || {};
+        
+        if (!user_id) {
+          console.error('No user_id in session metadata');
+          break;
+        }
 
-    if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
-      const subscription = event.data.object;
-      await supabase
-        .from('subscriptions')
-        .update({ status: subscription.status })
-        .eq('stripe_subscription_id', subscription.id);
+        // Get subscription details
+        const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+
+        // Insert subscription record
+        const { error: subError } = await supabase.from('subscriptions').insert({
+          user_id,
+          business_id: business_id || null,
+          stripe_subscription_id: subscription.id,
+          plan_type: plan_type || 'newsletter',
+          status: subscription.status,
+        });
+
+        if (subError) {
+          console.error('Error inserting subscription:', subError);
+        } else {
+          console.log(`Subscription created for user ${user_id}`);
+        }
+
+        // If it's a business subscription, activate the business
+        if (business_id && plan_type?.includes('business')) {
+          const { error: bizError } = await supabase
+            .from('businesses')
+            .update({ 
+              is_premium: plan_type === 'business_premium',
+              is_free_tier: false 
+            })
+            .eq('id', business_id);
+
+          if (bizError) {
+            console.error('Error updating business:', bizError);
+          }
+        }
+        break;
+
+      case 'customer.subscription.updated':
+      case 'customer.subscription.deleted':
+        const updatedSubscription = event.data.object;
+        const { error: updateError } = await supabase
+          .from('subscriptions')
+          .update({ status: updatedSubscription.status })
+          .eq('stripe_subscription_id', updatedSubscription.id);
+
+        if (updateError) {
+          console.error('Error updating subscription:', updateError);
+        } else {
+          console.log(`Subscription ${updatedSubscription.id} updated to ${updatedSubscription.status}`);
+        }
+        break;
+
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
     }
 
     return new Response(JSON.stringify({ received: true }), {
@@ -48,6 +96,7 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
+    console.error('Webhook error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { 'Content-Type': 'application/json' },
       status: 400,
