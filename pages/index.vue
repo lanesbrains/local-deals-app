@@ -41,6 +41,20 @@
           inbox!
         </p>
 
+        <!-- Error Message -->
+        <div
+          v-if="error"
+          class="error-message bg-red-500/20 border border-red-500/50 rounded-xl p-4 mb-6 backdrop-blur-md"
+        >
+          <div class="flex items-center">
+            <span class="text-red-400 text-xl mr-3">⚠️</span>
+            <div>
+              <h3 class="text-red-400 font-semibold mb-1">Signup Error</h3>
+              <p class="text-red-300">{{ error }}</p>
+            </div>
+          </div>
+        </div>
+
         <form
           @submit.prevent="handleSignup"
           class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/20"
@@ -171,24 +185,55 @@ onMounted(async () => {
 
 const handleSignup = async () => {
   loading.value = true;
+  error.value = "";
+
   try {
+    // Validate input
+    if (!email.value) {
+      throw new Error("Please enter your email address");
+    }
+    if (selectedCategories.value.length === 0) {
+      throw new Error("Please select at least one category");
+    }
+
+    console.log("Starting signup process for:", email.value);
+    console.log("Selected categories:", selectedCategories.value);
+
+    // Step 1: Create auth user
     const { data: authData, error: authError } = await $supabase.auth.signUp({
       email: email.value,
       password: "auto-generated-" + Math.random().toString(36).slice(2),
     });
-    if (authError) throw authError;
 
-    // Insert user
+    if (authError) {
+      console.error("Auth error:", authError);
+      throw new Error(`Signup failed: ${authError.message}`);
+    }
+
+    if (!authData.user) {
+      throw new Error("Failed to create user account");
+    }
+
+    console.log("User created successfully:", authData.user.id);
+
+    // Step 2: Insert user record
     const { error: userError } = await $supabase.from("users").insert({
       user_id: authData.user.id,
       email: email.value,
     });
-    if (userError) throw userError;
 
-    // Insert categories and subcategories into junction tables
+    if (userError) {
+      console.error("User insert error:", userError);
+      throw new Error(`Failed to save user data: ${userError.message}`);
+    }
+
+    console.log("User record inserted successfully");
+
+    // Step 3: Insert category preferences
     const categoriesToInsert = selectedCategories.value
       .filter((c) => !c.subcategory_id)
       .map((c) => ({ user_id: authData.user.id, category_id: c.id }));
+
     const subcategoriesToInsert = selectedCategories.value
       .filter((c) => c.subcategory_id)
       .map((c) => ({
@@ -196,20 +241,40 @@ const handleSignup = async () => {
         subcategory_id: c.subcategory_id,
       }));
 
+    console.log("Categories to insert:", categoriesToInsert);
+    console.log("Subcategories to insert:", subcategoriesToInsert);
+
     if (categoriesToInsert.length > 0) {
       const { error: catError } = await $supabase
         .from("user_categories")
         .insert(categoriesToInsert);
-      if (catError) throw catError;
+
+      if (catError) {
+        console.error("Category insert error:", catError);
+        throw new Error(
+          `Failed to save category preferences: ${catError.message}`
+        );
+      }
+      console.log("Categories inserted successfully");
     }
+
     if (subcategoriesToInsert.length > 0) {
       const { error: subError } = await $supabase
         .from("user_subcategories")
         .insert(subcategoriesToInsert);
-      if (subError) throw subError;
+
+      if (subError) {
+        console.error("Subcategory insert error:", subError);
+        throw new Error(
+          `Failed to save subcategory preferences: ${subError.message}`
+        );
+      }
+      console.log("Subcategories inserted successfully");
     }
 
-    // Create Stripe checkout session
+    // Step 4: Create Stripe checkout session
+    console.log("Creating Stripe checkout session...");
+
     const { data: sessionData, error: sessionError } =
       await $supabase.functions.invoke("create-stripe-checkout", {
         body: {
@@ -221,20 +286,56 @@ const handleSignup = async () => {
           cancel_url: window.location.origin + "/cancel",
         },
       });
-    if (sessionError) throw sessionError;
 
+    if (sessionError) {
+      console.error("Stripe session error:", sessionError);
+      throw new Error(`Payment setup failed: ${sessionError.message}`);
+    }
+
+    if (!sessionData?.session_id) {
+      throw new Error("Failed to create payment session");
+    }
+
+    console.log("Stripe session created, redirecting to checkout...");
+
+    // Step 5: Redirect to Stripe checkout
     const stripe = await loadStripe(
       useRuntimeConfig().public.stripePublishableKey
     );
+
+    if (!stripe) {
+      throw new Error("Payment system not available");
+    }
+
     await stripe.redirectToCheckout({ sessionId: sessionData.session_id });
 
+    // Success feedback (only shown if redirect fails)
     showConfetti.value = true;
     setTimeout(() => (showConfetti.value = false), 2000);
     email.value = "";
     selectedCategories.value = [];
   } catch (error) {
-    alert("Oops! Something went wrong. Try again.");
-    console.error(error);
+    console.error("Signup error:", error);
+
+    // Show user-friendly error message
+    if (error.message.includes("RLS") || error.message.includes("policy")) {
+      error.value =
+        "There's a temporary issue with our signup system. Please try again in a few minutes or contact support.";
+    } else if (error.message.includes("already registered")) {
+      error.value = "This email is already registered. Try logging in instead.";
+    } else if (error.message.includes("invalid email")) {
+      error.value = "Please enter a valid email address.";
+    } else {
+      error.value = error.message || "Something went wrong. Please try again.";
+    }
+
+    // Scroll to error message
+    setTimeout(() => {
+      const errorElement = document.querySelector(".error-message");
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 100);
   } finally {
     loading.value = false;
   }
