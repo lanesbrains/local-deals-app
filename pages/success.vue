@@ -19,12 +19,30 @@
       <h1
         class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400 mb-6"
       >
-        🎉 Welcome to PNW Deals!
+        🎉 Thank You for Joining!
       </h1>
 
+      <!-- Payment Success Confirmation -->
+      <div
+        class="bg-green-500/20 border border-green-500/50 rounded-xl p-4 mb-8 backdrop-blur-md"
+      >
+        <div class="flex items-center justify-center">
+          <span class="text-green-400 text-2xl mr-3">✅</span>
+          <div class="text-center">
+            <h3 class="text-green-400 font-semibold mb-1">
+              Payment Successful!
+            </h3>
+            <p class="text-green-300">
+              Your subscription is now active. Check your email for
+              confirmation.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <p class="text-xl text-gray-300 mb-8 leading-relaxed">
-        Your subscription is now active! You'll receive your first personalized
-        newsletter every Monday with deals tailored to your interests.
+        You'll receive your first personalized newsletter every Monday with
+        deals tailored to your selected interests.
       </p>
 
       <!-- What's Next -->

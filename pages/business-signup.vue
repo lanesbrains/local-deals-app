@@ -306,8 +306,8 @@ const handleBusinessSignup = async () => {
     if (businessError) throw businessError;
 
     const priceId = isPremium.value
-      ? "prod_Svyo4KIiSRakPs"
-      : "prod_Svyn45G8QGVM8o";
+      ? "price_1S085OFqXu3q4jXw3HBZeOG0" // $10/month premium
+      : "price_1S085NFqXu3q4jXwXgYBWhuD"; // $5/month standard
     const { data: sessionData, error: sessionError } =
       await $supabase.functions.invoke("create-stripe-checkout", {
         body: {

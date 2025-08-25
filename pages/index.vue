@@ -281,7 +281,7 @@ const handleSignup = async () => {
           user_id: authData.user.id,
           email: email.value,
           plan_type: "newsletter",
-          price_id: "prod_SvylU8VEQFV83C",
+          price_id: "price_1S06naFqXu3q4jXwqTbg1reO",
           success_url: window.location.origin + "/success",
           cancel_url: window.location.origin + "/cancel",
         },
@@ -296,9 +296,9 @@ const handleSignup = async () => {
       throw new Error("Failed to create payment session");
     }
 
-    console.log("Signup successful! Storing preferences and redirecting...");
+    console.log("Signup successful! Redirecting to Stripe checkout...");
 
-    // Store category names for thank you page
+    // Store category names and email for later use
     const categoryNames = selectedCategories.value.map(
       (cat) => cat.name || "Unknown Category"
     );
@@ -306,11 +306,30 @@ const handleSignup = async () => {
       "selected_category_names",
       JSON.stringify(categoryNames)
     );
+    localStorage.setItem("signup_email", email.value);
 
-    // Show immediate thank you message
-    await navigateTo("/signup-success");
+    // Redirect to Stripe checkout
+    const stripe = await loadStripe(
+      useRuntimeConfig().public.stripePublishableKey
+    );
 
-    // Reset form
+    if (!stripe) {
+      throw new Error("Payment system not available");
+    }
+
+    // Show loading feedback
+    showConfetti.value = true;
+
+    // Redirect to Stripe
+    const { error: stripeError } = await stripe.redirectToCheckout({
+      sessionId: sessionData.session_id,
+    });
+
+    if (stripeError) {
+      throw new Error(`Stripe redirect failed: ${stripeError.message}`);
+    }
+
+    // Reset form (only reached if redirect fails)
     email.value = "";
     selectedCategories.value = [];
   } catch (error) {
