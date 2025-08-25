@@ -296,7 +296,7 @@ const handleSignup = async () => {
       throw new Error("Failed to create payment session");
     }
 
-    console.log("Signup successful! Redirecting to Stripe checkout...");
+    console.log("✅ Stripe checkout session created:", sessionData.session_id);
 
     // Store category names and email for later use
     const categoryNames = selectedCategories.value.map(
@@ -308,25 +308,51 @@ const handleSignup = async () => {
     );
     localStorage.setItem("signup_email", email.value);
 
-    // Redirect to Stripe checkout
+    // Load Stripe
+    console.log(
+      "🔄 Loading Stripe with key:",
+      useRuntimeConfig().public.stripePublishableKey?.substring(0, 20) + "..."
+    );
     const stripe = await loadStripe(
       useRuntimeConfig().public.stripePublishableKey
     );
 
     if (!stripe) {
-      throw new Error("Payment system not available");
+      console.error("❌ Failed to load Stripe");
+      throw new Error(
+        "Payment system not available - please check your internet connection"
+      );
     }
+
+    console.log("✅ Stripe loaded successfully");
 
     // Show loading feedback
     showConfetti.value = true;
+
+    // Add a small delay to ensure the user sees the loading state
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    console.log("🚀 Redirecting to Stripe checkout...");
+    console.log("   Session ID:", sessionData.session_id);
+    console.log(
+      "   Checkout URL: https://checkout.stripe.com/c/pay/" +
+        sessionData.session_id
+    );
 
     // Redirect to Stripe
     const { error: stripeError } = await stripe.redirectToCheckout({
       sessionId: sessionData.session_id,
     });
 
+    // This should never be reached if redirect is successful
+    console.error("❌ Stripe redirect failed or was blocked:", stripeError);
+
     if (stripeError) {
       throw new Error(`Stripe redirect failed: ${stripeError.message}`);
+    } else {
+      throw new Error(
+        "Stripe redirect was blocked - please check popup blockers or try again"
+      );
     }
 
     // Reset form (only reached if redirect fails)

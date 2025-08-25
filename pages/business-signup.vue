@@ -322,26 +322,36 @@ const handleBusinessSignup = async () => {
       });
     if (sessionError) throw sessionError;
 
+    console.log("🔄 Loading Stripe for business signup...");
     const stripe = await loadStripe(
       useRuntimeConfig().public.stripePublishableKey
     );
-    await stripe.redirectToCheckout({ sessionId: sessionData.session_id });
+
+    if (!stripe) {
+      throw new Error(
+        "Payment system not available - please check your internet connection"
+      );
+    }
+
+    console.log("✅ Stripe loaded, redirecting to checkout...");
+    console.log("   Session ID:", sessionData.session_id);
 
     showConfetti.value = true;
-    setTimeout(() => (showConfetti.value = false), 2000);
-    alert(
-      "Awesome! Your business is in. You can now log in at /business-portal."
-    );
-    email.value = "";
-    password.value = "";
-    businessName.value = "";
-    description.value = "";
-    website.value = "";
-    phone.value = "";
-    socialMedia.value = { twitter: "", instagram: "" };
-    categoryId.value = null;
-    subcategoryId.value = null;
-    isPremium.value = false;
+
+    const { error: stripeError } = await stripe.redirectToCheckout({
+      sessionId: sessionData.session_id,
+    });
+
+    // This code should never execute if redirect works
+    console.error("❌ Business signup Stripe redirect failed:", stripeError);
+
+    if (stripeError) {
+      throw new Error(`Stripe redirect failed: ${stripeError.message}`);
+    } else {
+      throw new Error(
+        "Stripe redirect was blocked - please disable popup blockers and try again"
+      );
+    }
   } catch (error) {
     alert("Oops! Something went wrong. Try again.");
     console.error(error);
